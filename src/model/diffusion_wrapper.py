@@ -825,19 +825,17 @@ class DiffusionWrapper(LightningModule):
             repeat_factor=1
         )
 
-        for j in tqdm(range(b), desc="Saving Sampled Views: "):
+        # Temporal decoders may truncate the target sequence to complete chunks.
+        # Pair each rendered frame with the corresponding GT prefix (left/right).
+        num_rendered = sampled_views.shape[1]
+        if num_rendered > target_views.shape[1]:
+            raise ValueError("Rendered sequence is longer than the available ground truth")
+        for j in tqdm(range(b), desc="Saving Comparisons: "):
             save_image_video(
-                images=sampled_views[j], 
-                indices=torch.arange(0, sampled_views[j].shape[0]), 
-                output_dir=self.output_dir / "predicted" / batch["scene"][j],
-                name=self.sampler.cfg.name, save_img=True, save_video=False
-            )
-        for j in tqdm(range(b), desc="Saving Original Views: "):
-            save_image_video(
-                images=target_views[j], 
-                indices=torch.arange(0, target_views[j].shape[0]), 
-                output_dir=self.output_dir / "gt" / batch["scene"][j],
-                name="original", save_img=True, save_video=False
+                images=torch.cat((target_views[j, :num_rendered], sampled_views[j]), dim=-1),
+                indices=batch["target"]["index"][j, :num_rendered],
+                output_dir=self.output_dir / "cmp" / batch["scene"][j],
+                name="comparison", save_img=True, save_video=False
             )
 
             save_image_video(

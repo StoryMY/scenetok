@@ -63,7 +63,32 @@ The index generator also accepts `--images-dir` and `--model-dir`.
 
 ## Run SceneTok on one GPU
 
-Download the SceneTok, VA-VAE and VideoDCAE checkpoints described in the README first.
+Download the default RE10K + VideoDCAE combination (4 files including latent statistics).
+Optional downloads are commented out in the script, with notes explaining which default
+weights they replace. Uncomment the desired commands before switching model presets:
+
+```bash
+bash scripts/download_models.sh
+```
+
+After generating the index above, edit `COLMAP_ROOT`, `INDEX_PATH`, `OUTPUT_DIR`,
+`MODEL` and `GPU_ID` at the top of `scripts/run_infer.sh`, then run from the repository root:
+
+```bash
+bash scripts/run_infer.sh
+```
+
+The script selects a preset and executes one Python inference command.
+`MODEL=re10k_videodc` is the default (RE10K + VA-VAE + VideoDCAE).
+Use `dl3dv_videodc` for DL3DV + VA-VAE + VideoDCAE, or `dl3dv_wan` for
+DL3DV + VA-VAE + Wan. Presets select the experiment, checkpoint and view sampler;
+autoencoder paths come from the experiment. Generate a Wan-compatible index before
+switching to Wan. The COLMAP model is expected in `sparse/0`.
+DL3DV presets enable the legacy focal-scaling conventions used by their pretrained
+checkpoints (see `KNOWN_BUGS.md`). The COLMAP adapter honors these experiment flags;
+the default RE10K preset keeps geometrically normalized intrinsics without this scaling.
+Downloading SceneGen weights does not enable SceneGen inference in this script.
+The equivalent command is:
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -m src.main \
@@ -84,3 +109,12 @@ This adapter currently supports single-scene SceneTok evaluation, not training o
 SceneGen conditioning. It loads the selected RGB frames, including target ground
 truth used by the existing evaluation pipeline. Camera reconstruction quality,
 scene scale and domain differences can affect pretrained-model results.
+
+## Test outputs
+
+`mode=test` saves side-by-side PNG comparisons to `cmp/<scene>/`: ground truth
+on the left, prediction on the right. Filenames use the selected target indices.
+Only rendered frames are paired; any trailing targets truncated by the temporal
+decoder are omitted. Separate `gt/` and `predicted/` outputs are no longer written.
+Input views are still saved under `context/<scene>/`. Existing output files from
+previous runs are not removed; use a new output directory for a clean result.

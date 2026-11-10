@@ -17,6 +17,9 @@ class DatasetCOLMAPCfg(DatasetCfgCommon):
     root: Path
     images_dir: Path = Path("images")
     model_dir: Path | None = None
+    # Match the legacy camera conventions used to train the DL3DV checkpoints.
+    scale_focal_by_256: bool = False
+    scale_context_focal_by_256: bool = False
 
 
 class DatasetCOLMAP(Dataset):
@@ -69,6 +72,10 @@ class DatasetCOLMAP(Dataset):
             for i in selected:
                 if i not in loaded:
                     pixels, intrinsics = load_frame(frames[i], cfg.shape)
+                    if cfg.scale_focal_by_256:
+                        camera = frames[i].camera.camera
+                        intrinsics[0, 0] *= camera.width / 256
+                        intrinsics[1, 1] *= camera.height / 256
                     loaded[i] = (torch.from_numpy(pixels), torch.from_numpy(intrinsics))
             sample[group] = {
                 "latent": torch.stack([loaded[i][0] for i in selected]),
@@ -76,4 +83,7 @@ class DatasetCOLMAP(Dataset):
                 "extrinsics": torch.tensor(np.stack([frames[i].extrinsics for i in selected]), dtype=torch.float32),
                 "index": indices,
             }
+            if group == "context" and cfg.scale_context_focal_by_256:
+                sample[group]["intrinsics"][..., 0, 0] *= 3840 / 256
+                sample[group]["intrinsics"][..., 1, 1] *= 2160 / 256
         return sample
