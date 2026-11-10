@@ -30,7 +30,6 @@ class ViewSamplerEvaluationVideoWan(ViewSampler[ViewSamplerEvaluationVideoWanCfg
         self,
         cfg: ViewSamplerEvaluationVideoWanCfg,
         stage: Stage,
-        is_overfitting: bool,
         cameras_are_circular: bool,
         step_tracker: StepTracker | None,
         generator: Generator | None = None

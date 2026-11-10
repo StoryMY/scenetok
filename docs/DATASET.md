@@ -9,6 +9,7 @@ In our experiments, we use `latent` datasets where we precompute and store the l
 We provide preprocessed dataset of WAN 2.2 latents for DL3DV [here](https://drive.google.com/file/d/1w5WSqTnvGKBrbHClke3Spv-IbutwoQlv/view?usp=sharing)  
 
 ## Inference
+For native `images/` + COLMAP `sparse/` input via pycolmap, see [COLMAP.md](COLMAP.md).
 Inference does not need to use the latent dataset and instead use RGB dataset and can use the original dataset format.
 > For RE10K, we follow [pixelSplat](https://github.com/dcharatan/pixelsplat/)
 

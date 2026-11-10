@@ -30,7 +30,6 @@ class ViewSamplerEvaluationVideo(ViewSampler[ViewSamplerEvaluationVideoCfg]):
         self,
         cfg: ViewSamplerEvaluationVideoCfg,
         stage: Stage,
-        is_overfitting: bool,
         cameras_are_circular: bool,
         step_tracker: StepTracker | None,
         generator: Generator | None = None

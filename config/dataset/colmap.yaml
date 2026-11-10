@@ -1,0 +1,13 @@
+defaults:
+  - view_sampler: evaluation_video
+
+name: colmap
+root: null
+images_dir: images
+model_dir: null
+shape: [256, 256]
+augment: false
+cameras_are_circular: false
+precomputed_latents:
+  context: false
+  target: false
