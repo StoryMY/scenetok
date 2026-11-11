@@ -11,6 +11,7 @@ diffusers
 e3nn
 easydict
 einops
+fairscale
 h5py
 hydra-core
 imageio
@@ -35,6 +36,7 @@ seaborn
 tabulate
 timm==1.0.15
 tqdm
+torch-fidelity
 transformers
 wandb
 pycolmap>=4.2,<5
